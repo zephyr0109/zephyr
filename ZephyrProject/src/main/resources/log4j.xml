@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+
+	<!-- 콘솔 로그 -->
+	<appender name="console" class="org.apache.log4j.ConsoleAppender">
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d %p [ %l ] %m \n" />
+		</layout>
+	</appender>
+
+	<!-- 날짜별 로그 파일 생성 -->
+	<appender name="springFile" class="org.apache.log4j.RollingFileAppender">
+		<param name="File" value="logs/spring.log" />
+		<param name="Append" value="true" />
+		<param name="MaxFileSize" value="10MB"/>
+		<param name="MaxBackupIndex" value="10"></param>
+		<param name="DatePattern" value="'.'yyyy-MM-dd" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d %p [ %l ] %m \n" />
+		</layout>
+	</appender>
+
+    <!-- 날짜별 로그 파일 생성 -->
+    <appender name="emlLogFile" class="org.apache.log4j.RollingFileAppender">
+        <param name="File" value="logs/emlLog.log" />
+        <param name="Append" value="true" />
+		<param name="MaxFileSize" value="10MB"/>
+		<param name="MaxBackupIndex" value="10"></param>
+        <param name="DatePattern" value="'.'yyyy-MM-dd" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d %p [ %l ] %m \n" />
+        </layout>
+    </appender>
+
+
+	<!-- 날짜별 로그 파일 생성(에러만) -->
+	<appender name="errFile" class="org.apache.log4j.RollingFileAppender">
+		<param name="Threshold" value="WARN" />
+		<param name="File" value="logs/error.log" />
+		<param name="Append" value="true" />
+		<param name="MaxFileSize" value="10MB"/>
+		<param name="MaxBackupIndex" value="10"></param>
+		<param name="DatePattern" value="'.'yyyy-MM-dd" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d %5p [ %l ] %m \n" />
+		</layout>
+	</appender>
+
+	<!-- 특정 패키지 출력 설정 -->	
+	<logger name="org.springframework">
+		<level value="info" />
+		<appender-ref ref="springFile" />
+	</logger>	
+	<logger name="com.saerom">
+        <level value="debug" />
+        <appender-ref ref="emlLogFile"/>
+    </logger>
+
+	<!-- 기본 출력 설정 -->
+	<root>
+		<level value="debug" />
+		<appender-ref ref="console" />
+		<appender-ref ref="errFile" />
+		
+	</root>
+
+</log4j:configuration>

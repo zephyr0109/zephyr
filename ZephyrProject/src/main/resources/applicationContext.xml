@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:c="http://www.springframework.org/schema/c"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd">
+	<context:annotation-config />
+	<context:property-placeholder location="classpath*:eml.properties" />
+	<bean id="mailDataSource"
+		class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
+		<property name="driverClass" value="${tibero.classname}" />
+		<property name="url" value="${tibero.url}" />
+		<property name="username" value="${tibero.user}" />
+		<property name="password" value="${tibero.password}" />
+	</bean>
+	<bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="${tibero.classname}" />
+		<property name="url" value="${tibero.url}" />
+		<property name="username" value="${tibero.user}" />
+		<property name="password" value="${tibero.password}" />
+    	<property name="maxTotal" value="10"/>
+    	<property name="maxIdle" value="10"/>
+    	<property name="minIdle" value="5"/>
+    	<property name="maxWaitMillis" value="10"/>
+    	
+	</bean>
+	<bean id="logDataSource"
+		class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
+		<property name="driverClass" value="com.microsoft.sqlserver.jdbc.SQLServerDriver" />
+		<property name="url" value="jdbc:sqlserver://localhost:1433" />
+		<property name="username" value="test" />
+		<property name="password" value="test" />
+	</bean>
+
+	<bean class="com.saerom.mig.App"></bean>
+	<bean class="com.saerom.mig.FileConsoleProcessor"></bean>
+	<bean class="com.saerom.mig.POP3ConsoleProcessor"></bean>
+
+
+	<bean id="contentFilter" class="com.saerom.filter.ContentFilter">
+		<constructor-arg>
+			<value>${mail.filter.path}</value>
+		</constructor-arg>
+	</bean>
+	<bean id="mailManager" class="com.saerom.mail.service.MailManager">
+		<property name="cf" ref="contentFilter"></property>
+	</bean>
+	<bean id="approManager" class="com.saerom.mail.service.ApproManager" />
+
+	<bean id="mailDao" class="com.saerom.tibero.dao.SpJDBCTiberoMailDao">
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+	<bean id="approDao" class="com.saerom.tibero.dao.SpJDBCTiberoApproDao">
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+	<bean id="logDao" class="com.saerom.mssql.dao.SpJDBCMssqlMailDao">
+		<property name="dataSource" ref="logDataSource"></property>
+	</bean>
+</beans>
